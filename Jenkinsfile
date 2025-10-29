@@ -1,0 +1,57 @@
+pipeline {
+    agent {
+        label 'AGENT-1'
+    }
+
+    environment {
+        appVersion = ''
+        REGION = 'us-east-1'
+        ACC_ID = '850960379432'
+        PROJECT = 'roboshop'
+        COMPONENT = 'catalogue'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        disableConcurrentBuilds() //It is used to disable the parallel Builds of the job
+    }
+
+    parameters {
+        string(name: 'appVersion', description: 'Image version of the appilication')
+        choice(name: 'deploy_to', choices: ['dev','qa','prod'], description: 'Pick the environment')
+        
+    }
+
+
+    stages{
+        stage('Deploy'){
+            steps{
+                script{
+                    withAWS(credentials: 'aws_creds', region: 'us-east-1'){
+                        sh """
+                            aws eks update-kubeconfig --region $REGION --name "$PROJECT-${params.deploy_to}"
+                            kubectl get nodes
+                            kubectl apply -f 01-namespace.yaml
+                            sed -i "s/IMAGE_VERSION/${params.appVersion}/g" values-${params.deploy_to}.yaml
+                            helm upgrade --install $COMPONENT  -f values-${param.deploy_to}.yaml -n $PROJECT .
+                        """
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo 'I will always say hello again'
+            deleteDir()
+        }
+
+        success {
+            echo 'Hello Success'
+        }
+
+        failure {
+            echo "Hello Failure"
+        }
+    }
+}

@@ -1,0 +1,6 @@
+deployment:
+  imageURL: arunkumarnelluri/catalogue
+  imageVersion: IMAGE_VERSION
+hpa:
+  maxReplicas: 10
+  Utilization: 75
