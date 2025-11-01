@@ -33,7 +33,7 @@ pipeline {
                             kubectl get nodes
                             kubectl apply -f 01-namespaces.yaml
                             sed -i "s/IMAGE_VERSION/${params.appVersion}/g" values-${params.deploy_to}.yaml
-                            helm upgrade --install $COMPONENT  -f values-${params.deploy_to}.yaml --set image.tag=${params.appVersion} -n $PROJECT .
+                            helm upgrade --install $COMPONENT  -f values-${params.deploy_to}.yaml -n $PROJECT .
                         """
                     }
                 }
