@@ -39,7 +39,7 @@ pipeline {
                 }
             }
         }
-    }
+    
 
         stage('Check Status'){
             steps{
@@ -67,7 +67,7 @@ pipeline {
             }
         }
 
-
+    }
     
     post {
         always {
