@@ -41,7 +41,7 @@ pipeline {
         }
     }
 
-        stage("Check Status"){
+        stage('Check Status'){
             steps{
                 script{
                     withAWS(credentials: 'aws_creds', region: 'us-east-1'){
