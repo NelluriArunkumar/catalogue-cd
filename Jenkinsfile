@@ -68,10 +68,47 @@ pipeline {
             }
         }
 
+        //API Testing
+        stage('Functional Testing') {
+            when {
+                expression { params.deploy_to = "dev" }
+            }
+            steps{
+                script{
+                    echo "Run Functional Test cases"
+                }
+            }
+        }
 
+        //All Components testing
+        stage('Integration Testing'){
+            when {
+                expression { params.deploy_to = "qa" }
+            }
+            steps{
+                script{
+                    echo "Run Integration Test cases"
+                }
+            }
+        }
 
-        
-
+        stage('Prod deploy') {
+            when {
+                expression { params.deploy_to = "prod"}
+            }
+            steps{
+                script{
+                    withAWS(credentials: 'aws_creds', region: 'us-east-1'){
+                        sh """
+                            echo "Get the CR Number"
+                            echo "Check with in the deployment window"
+                            echo "is CR approved"
+                            echo "Trigger PROD Deploy"
+                        """
+                    }
+                }
+            }
+        }
         
     }
     
